@@ -1,0 +1,19 @@
+.home-container {
+
+  background: rgb(142 138 138 / 14%);
+}
+
+.card {
+  width: 18rem;
+}
+.card-display{
+  display: flex;
+}
+.card-text{
+    display: flex;
+    justify-content: center;
+    font-weight: 600;
+}
+.card-img-top{
+  height: 75%;
+}
