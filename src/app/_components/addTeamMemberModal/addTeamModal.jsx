@@ -1,61 +1,121 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
 import InputField from "../inputField/inputField";
 import SelectField from "../selectField/selectField";
 import "./styles.css";
+import { useAtom } from "jotai";
+import { teamDataAtom } from "../../_atoms/teamAtoms";
 
-const AddTeamModal = ({ showModal, onClose }) => {
-  const [productName, setProductName] = useState("");
-  const [pu, setPU] = useState("");
+const AddTeamModal = ({ showModal, onClose, modalType, modalData = {} }) => {
+  const [infyId, setInfyId] = useState("");
+  const [infyEmail, setInfyEmail] = useState("");
   const [location, setLocation] = useState("");
   const [skills, setSkills] = useState("");
+  const [PU, setPU] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [bpSponsorEmail, setBpSponsorEmail] = useState("");
+  const [mission, setMission] = useState("");
+  const [productName, setProductName] = useState("");
   const [workType, setWorkType] = useState("");
   const [workScope, setWorkScope] = useState("");
-  const [candidateEmpId, setCandidateEmpId] = useState("");
-  const [candidateEmail, setCandidateEmail] = useState("");
-  const [mission, setMission] = useState("");
-  const [bpSponserEmail, setBpSponserEmail] = useState("");
   const [allocation, setAllocation] = useState("");
   const [contractType, setContractType] = useState("");
   const [rate, setRate] = useState("");
   const [backupResource, setBackupResource] = useState("");
-  // const handleSave = () => {
-  //   const teamData = {
-  //     productName,
-  //     pu,
-  //     location,
-  //     skills,
-  //     startDate,
-  //     endDate,
-  //     workType,
-  //     workScope,
-  //     candidateEmpId,
-  //     candidateEmail,
-  //     mission,
-  //     bpSponserEmail,
-  //     allocation,
-  //     contractType,
-  //     rate,
-  //     backupResource,
-  //   };
-  //   onSave(teamData);
-  //   onClose();
-  // };
+  const [teamData, setTeamData] = useAtom(teamDataAtom);
+
+  useEffect(() => {
+    console.log("modalData............edit/view", modalType, modalData);
+    if (modalType === "edit" || modalType === "view") {
+      setInfyId(modalData.infyId);
+      setInfyEmail(modalData.infyEmail);
+      setLocation(modalData.location);
+      setSkills(modalData.skills);
+      setPU(modalData.PU);
+      setStartDate(modalData.startDate);
+      setEndDate(modalData.endDate);
+      setBpSponsorEmail(modalData.bpSponsorEmail);
+      setMission(modalData.mission);
+      setProductName(modalData.productName);
+      setWorkType(modalData.workType);
+      setWorkScope(modalData.workScope);
+      setAllocation(modalData.allocation);
+      setContractType(modalData.contractType);
+      setRate(modalData.rate);
+      setBackupResource(modalData.backupResource);
+    }
+  }, [modalType, modalData]);
+
+  const onSaveChanges = () => {
+    const newData = {
+      infyId: infyId,
+      infyEmail: infyEmail,
+      location: location,
+      skills,
+      PU: PU,
+      startDate,
+      endDate,
+      bpSponsorEmail: bpSponsorEmail,
+      mission,
+      productName,
+      workType,
+      workScope,
+      allocation,
+      contractType,
+      rate,
+      backupResource,
+    };
+    console.log("teamData............", teamData, newData);
+    if (modalType === "edit") {
+      const updatedTeamData = teamData.map((item) =>
+        item.infyId === infyId ? newData : item
+      );
+      setTeamData(updatedTeamData);
+    } else {
+      setTeamData([...teamData, newData]);
+    }
+    handleCloseModal();
+  };
+
+  const handleCloseModal = () => {
+    setInfyId("");
+    setInfyEmail("");
+    setLocation("");
+    setSkills("");
+    setPU("");
+    setStartDate("");
+    setEndDate("");
+    setBpSponsorEmail("");
+    setMission("");
+    setProductName("");
+    setWorkType("");
+    setWorkScope("");
+    setAllocation("");
+    setContractType("");
+    setRate("");
+    setBackupResource("");
+    onClose();
+  };
+
   return (
     <Modal
       show={showModal}
-      onHide={() => onClose()}
-      // size="xl"
+      onHide={() => handleCloseModal()}
       fullscreen={true}
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title>Add Team</Modal.Title>
+        <Modal.Title>
+          {modalType === "add"
+            ? "Add Employee"
+            : modalType === "edit"
+            ? "Edit Employee"
+            : "View Employee"}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="modalContent">
@@ -63,16 +123,18 @@ const AddTeamModal = ({ showModal, onClose }) => {
             <InputField
               label="Infosys Id"
               type="text"
-              value={candidateEmpId}
-              onChange={(e) => setCandidateEmpId(e.target.value)}
+              value={infyId}
+              onChange={(e) => setInfyId(e.target.value)}
+              readOnly={modalType === "view" || modalType === "edit"}
             />
           </div>
           <div className="inputField">
             <InputField
               label="Infosys Email"
               type="text"
-              value={candidateEmail}
-              onChange={(e) => setCandidateEmail(e.target.value)}
+              value={infyEmail}
+              onChange={(e) => setInfyEmail(e.target.value)}
+              readOnly={modalType === "view" || modalType === "edit"}
             />
           </div>
           <div className="inputField">
@@ -81,6 +143,7 @@ const AddTeamModal = ({ showModal, onClose }) => {
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
+              readOnly={modalType === "view"}
             />
           </div>
           <div className="inputField">
@@ -89,14 +152,16 @@ const AddTeamModal = ({ showModal, onClose }) => {
               type="text"
               value={skills}
               onChange={(e) => setSkills(e.target.value)}
+              readOnly={modalType === "view"}
             />
           </div>
           <div className="inputField">
             <InputField
               label="PU"
               type="text"
-              value={pu}
+              value={PU}
               onChange={(e) => setPU(e.target.value)}
+              readOnly={modalType === "view"}
             />
           </div>
           <div className="inputField">
@@ -105,7 +170,8 @@ const AddTeamModal = ({ showModal, onClose }) => {
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-            //   min={new Date().toISOString().split("T")[0]}
+              readOnly={modalType === "view"}
+              //   min={new Date().toISOString().split("T")[0]}
             />
           </div>
           <div className="inputField">
@@ -114,7 +180,8 @@ const AddTeamModal = ({ showModal, onClose }) => {
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-            //   min={new Date().toISOString().split("T")[0]}
+              readOnly={modalType === "view"}
+              //   min={new Date().toISOString().split("T")[0]}
             />
           </div>
           <div className="inputField">
@@ -123,9 +190,10 @@ const AddTeamModal = ({ showModal, onClose }) => {
               value={workType}
               onChange={(e) => setWorkType(e.target.value)}
               options={[
-                { value: "CAPEX", label: "CAPEX" },
-                { value: "OPEX", label: "OPEX" },
+                { id: 1, value: "CAPEX", label: "CAPEX" },
+                { id: 2, value: "OPEX", label: "OPEX" },
               ]}
+              readOnly={modalType === "view"}
             />
           </div>
           <div className="inputField">
@@ -134,11 +202,12 @@ const AddTeamModal = ({ showModal, onClose }) => {
               value={workScope}
               onChange={(e) => setWorkScope(e.target.value)}
               options={[
-                { value: "DevOps", label: "DevOps" },
-                { value: "OpsDev", label: "OpsDev" },
-                { value: "Dev", label: "Dev" },
-                { value: "KTLO", label: "KTLO" },
+                { id: 1, value: "DevOps", label: "DevOps" },
+                { id: 2, value: "OpsDev", label: "OpsDev" },
+                { id: 3, value: "Dev", label: "Dev" },
+                { id: 4, value: "KTLO", label: "KTLO" },
               ]}
+              readOnly={modalType === "view"}
             />
           </div>
           <div className="inputField">
@@ -147,6 +216,7 @@ const AddTeamModal = ({ showModal, onClose }) => {
               type="text"
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
+              readOnly={modalType === "view"}
             />
           </div>
           <div className="inputField">
@@ -155,14 +225,16 @@ const AddTeamModal = ({ showModal, onClose }) => {
               type="text"
               value={mission}
               onChange={(e) => setMission(e.target.value)}
+              readOnly={modalType === "view"}
             />
           </div>
           <div className="inputField">
             <InputField
               label="bp Sponsor Email"
               type="text"
-              value={bpSponserEmail}
-              onChange={(e) => setBpSponserEmail(e.target.value)}
+              value={bpSponsorEmail}
+              onChange={(e) => setBpSponsorEmail(e.target.value)}
+              readOnly={modalType === "view"}
             />
           </div>
           <div className="inputField">
@@ -171,6 +243,7 @@ const AddTeamModal = ({ showModal, onClose }) => {
               type="text"
               value={allocation}
               onChange={(e) => setAllocation(e.target.value)}
+              readOnly={modalType === "view"}
             />
           </div>
           <div className="inputField">
@@ -179,6 +252,7 @@ const AddTeamModal = ({ showModal, onClose }) => {
               type="text"
               value={contractType}
               onChange={(e) => setContractType(e.target.value)}
+              readOnly={modalType === "view"}
             />
           </div>
           <div className="inputField">
@@ -187,6 +261,7 @@ const AddTeamModal = ({ showModal, onClose }) => {
               type="text"
               value={rate}
               onChange={(e) => setRate(e.target.value)}
+              readOnly={modalType === "view"}
             />
           </div>
           <div className="inputField">
@@ -195,6 +270,7 @@ const AddTeamModal = ({ showModal, onClose }) => {
               type="text"
               value={backupResource}
               onChange={(e) => setBackupResource(e.target.value)}
+              readOnly={modalType === "view"}
             />
           </div>
         </div>
@@ -207,12 +283,14 @@ const AddTeamModal = ({ showModal, onClose }) => {
           padding: "20px",
         }}
       >
-        <Button variant="secondary" onClick={() => onClose()}>
+        <Button variant="secondary" onClick={() => handleCloseModal()}>
           Close
         </Button>
-        <Button variant="primary" onClick={() => onClose()}>
-          Save Changes
-        </Button>
+        {modalType !== "view" && (
+          <Button variant="primary" onClick={() => onSaveChanges()}>
+            Save Changes
+          </Button>
+        )}
       </Modal.Footer>
     </Modal>
   );

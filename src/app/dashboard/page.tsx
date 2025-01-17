@@ -17,8 +17,8 @@ function Dashboard() {
     },
     {
       id: 2,
-      path: "teamManagement",
-      description: "Team Management",
+      path: "employeeManagement",
+      description: "Employee Management",
       image: team,
     },
     {

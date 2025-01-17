@@ -1,4 +1,4 @@
-td .rounded-btn {
+.rounded-btn {
   border-radius: 50px;
   /* Custom border-radius */
   padding: 4px 15px;
@@ -10,6 +10,10 @@ td .rounded-btn {
   margin-right: 35px;
   font-size: 28px;
   color: green;
+}
+.headContain{
+  padding-left: 40px;
+  padding-right: 40px;
 }
 
 td {
